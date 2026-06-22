@@ -91,4 +91,12 @@ async function loginUser(req, res) {
   });
 };
 
-module.exports = { signupUser, loginUser }
+async function logoutUser(req, res) {
+    //clearing the cookies
+    res.clearCookie("token");
+    res.status(200).json({
+        "message":"Logged out successfully"
+    });
+};
+
+module.exports = { signupUser, loginUser, logoutUser };

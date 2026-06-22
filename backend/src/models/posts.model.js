@@ -11,9 +11,14 @@ postsSchema = new mongoose.Schema({
     },
     writer: {
         type: mongoose.Types.ObjectId,
-        required: true
+        required: true,
+        ref : "Users"
+    },
+    opened: {
+        type: Number,
+        default: 0
     }
-}, {timestamp:true});
+}, {timestamps:true});
 
 postsModel = mongoose.model("posts", postsSchema);
 
