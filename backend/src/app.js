@@ -1,7 +1,7 @@
-const express = require("express");
-const cookieParser = require("cookie-parser");
-const authRoutes = require("./routes/auth.routes");
-const postsRoutes = require("./routes/posts.routes")
+import express from "express";
+import cookieParser from "cookie-parser";
+import authRoutes from "./routes/auth.routes.js";
+import postsRoutes from "./routes/posts.routes.js";
 
 const app = express();
 
@@ -19,4 +19,4 @@ app.use((req, res, next) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postsRoutes);
 
-module.exports = app;
+export default app;

@@ -1,4 +1,4 @@
-const postsModel = require("../models/posts.model")
+import postsModel from "../models/posts.model.js";
 
 async function createPost(req, res) {
     //checking access level of the user
@@ -16,7 +16,7 @@ async function createPost(req, res) {
         desc: desc,
         writer: id
     });
-    res.status(301).json({
+    res.status(201).json({
         post_id: post._id,
         artist_id: id,
         role: role,
@@ -29,6 +29,7 @@ async function createPost(req, res) {
 
 async function updatePost(req, res) {
     //checking access level of the user
+    console.log(req.user.role)
     if (req.user.role !== "writer") {
         return res.status(403).json({
             message: "Forbidden: Viewer cannot update post"
@@ -101,4 +102,4 @@ async function getPostById(req, res){
         lastUpdate: post.updatedAt
     });
 };
-module.exports = { createPost, updatePost, getAllPosts , getPostById };
+export default { createPost, updatePost, getAllPosts , getPostById };

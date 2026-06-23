@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-postsSchema = new mongoose.Schema({
+const postsSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true
@@ -20,6 +20,6 @@ postsSchema = new mongoose.Schema({
     }
 }, {timestamps:true});
 
-postsModel = mongoose.model("posts", postsSchema);
+const postsModel = mongoose.model("posts", postsSchema);
 
-module.exports = postsModel;
+export default postsModel;

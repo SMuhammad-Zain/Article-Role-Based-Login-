@@ -1,7 +1,7 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 
 async function checkUserlogin(req, res, next) {
-    token = req.cookies.token;
+    const token = req.cookies.token;
 
     //check if token is present
     if (!token) {
@@ -23,4 +23,4 @@ async function checkUserlogin(req, res, next) {
     }
 };
 
-module.exports = { checkUserlogin };
+export default { checkUserlogin };
