@@ -109,20 +109,46 @@ export async function loginUser(req, res) {
   };
 
   //creating token for correct user
-  const token = jwt.sign({
+  const refreshToken = jwt.sign({
     id: user._id,
     role: user.role
-  }, process.env.JWT_SECRET);
+  }, process.env.JWT_SECRET,{
+    "expiresIn": "1d"
+  });
 
   //sending cookies in response
-  res.cookie("token", token)
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: 24 * 60 * 60 * 1000
+  });
+
+  const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
+
+  const session = await sessionsModel.create({
+    userId: user._id,
+    refreshTokenHash,
+    ip: req.ip,
+    userAgent: req.headers["user-agent"]
+  });
+
+  const accessToken = jwt.sign({
+    sessionId: session._id,
+    id: user._id,
+    role: user.role
+  }, config.JWT_SECRET, {
+    "expiresIn": "5m"
+  });
+
   //sending loging in response
   res.status(200).json({
-    "id": user._id,
-    "username": user.username,
-    "email": user.email,
-    "password": user.password,
-    "role": user.role
+    id: user._id,
+    username: user.username,
+    email: user.email,
+    password: user.password,
+    role: user.role,
+    token: accessToken
   });
 };
 
@@ -138,7 +164,7 @@ export async function refreshToken(req, res) {
 
     const refreshTokenHash = crypto.createHash("sha256").update(token).digest("hex");
 
-    const session = await sessions.Model.findOne({
+    const session = await sessionsModel.findOne({
         refreshTokenHash,
         revoked: false
     });
@@ -159,6 +185,7 @@ export async function refreshToken(req, res) {
     //new access token creation
 
     const newAccessToken = jwt.sign({
+        sessionId: session._id,
         id: decoded.id,
         role: decoded.role
     }, config.JWT_SECRET, {
@@ -171,6 +198,11 @@ export async function refreshToken(req, res) {
     }, config.JWT_SECRET, {
         "expiresIn": "1d"   
     });
+
+    const newRefreshTokenHash = crypto.createHash("sha256").update(newRefreshToken).digest("hex");
+
+    session.refreshTokenHash = newRefreshTokenHash;
+    await session.save();
 
     res.cookie("refreshToken", newRefreshToken, {
         httpOnly: true,
