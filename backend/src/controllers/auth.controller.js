@@ -53,7 +53,8 @@ export async function signupUser(req, res) {
     const accessToken = jwt.sign({
         sessionId: session._id,
         id: user._id,
-        role: user.role
+        role: user.role,
+        refresh: refreshToken
     }, config.JWT_SECRET,{
         'expiresIn': '5m'
     });
@@ -136,7 +137,8 @@ export async function loginUser(req, res) {
   const accessToken = jwt.sign({
     sessionId: session._id,
     id: user._id,
-    role: user.role
+    role: user.role,
+    refresh: refreshToken
   }, config.JWT_SECRET, {
     "expiresIn": "5m"
   });
